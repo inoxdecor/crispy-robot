@@ -11,3 +11,11 @@ Fourteen social images validated at 1200×630, largest about 36 KB. WOFF2 payloa
 Ignored artifacts: artifacts/seo-report.json, artifacts/browser-report.json, artifacts/seo/*.html, reference screenshots and live-seo-audit.html/live-seo-headers.json. No real enquiries or Google hits were sent. Automated accessibility tests do not certify full accessibility.
 
 No deployment, push, DNS or Google account changes. See [manual handover](seo-implementation.md).
+
+Worldwide targeting follow-up: regenerated sharing images and production HTML, passed production build, lint, all 17 unit tests, all 51 SEO checks and 28 accessibility scans. Direct raw-HTML checks confirmed the five priority countries, removal of Delhi NCR targeting and accurate New Delhi address on home, service index and all seven services. Original design/runtime code was unchanged by this copy update.
+
+## Service scroll sequence
+
+Services now use a sticky, gesture-stepped journey. Wheel/swipe advances one category; reverse moves back. Click/keyboard selection resets progression, and boundary gestures return to page scrolling. Reduced motion and short viewports retain the ordinary accordion. Closed accordion links are inert to keyboard focus; initial SEO HTML remains intact. Hover no longer changes the selected category during scrolling.
+
+Final production build and lint passed. All 23 browser regressions passed, including four axe scans. node scripts/service-scroll-check.mjs passed desktop gesture/reverse/click-continuation/boundary, real CDP mobile swipe/reverse, and reduced-motion fallback checks with no runtime errors. Screenshots: artifacts/service-scroll-mobile.png and service-scroll-desktop.png. No deployment or push.

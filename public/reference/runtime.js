@@ -95,9 +95,8 @@ const S=[["Web development","Fast, credible sites and web apps that turn visitor
 const CAP=['Web development','Mobile apps','Software engineering','AI and automation','E-commerce','Design and brand','Growth and support'];
 let cur=0;const sr=$('#sr'),pvp=$('#pvp');
 if(!sr.children.length)sr.innerHTML=S.map((s,i)=>`<div class="sr${i?'':' on'}"><button class="sh2" aria-expanded="${!i}" aria-controls="b${i}"><span>0${i+1}</span><h3>${s[0]}</h3></button><div class="sb" id="b${i}"><div><p>${s[1]}</p><ul>${s[2].map(x=>`<li>${x}</li>`).join('')}</ul><a class="btn k" href="#contact" data-svc="${CAP[i]}">Discuss this</a></div></div></div>`).join('');
-function pick(i){if(i===cur&&pvp.innerHTML)return;cur=i;$$('.sr').forEach((r,j)=>{r.classList.toggle('on',j==i);r.querySelector('button').setAttribute('aria-expanded',j==i)});pvp.innerHTML=`<div class="cap mono"><span>0${i+1} / ${S[i][0]}</span><b>Demo UI</b></div>${PV[S[i][3]]()}<p class="mono" style="color:var(--mu)">Animated concept preview</p>`;tick()}
+function pick(i){if(i===cur&&pvp.innerHTML)return;cur=i;$$('.sr').forEach((r,j)=>{r.classList.toggle('on',j==i);r.querySelector('button').setAttribute('aria-expanded',j==i);r.querySelector('.sb').inert=j!==i});pvp.innerHTML=`<div class="cap mono"><span>0${i+1} / ${S[i][0]}</span><b>Demo UI</b></div>${PV[S[i][3]]()}<p class="mono" style="color:var(--mu)">Animated concept preview</p>`;tick()}
 sr.addEventListener('click',e=>{const b=e.target.closest('.sh2');if(b)pick($$('.sh2').indexOf(b))});
-sr.addEventListener('pointerover',e=>{if(!fine)return;const b=e.target.closest('.sh2');if(b)pick($$('.sh2').indexOf(b))});
 sr.addEventListener('focusin',e=>{const b=e.target.closest('.sh2');if(b)pick($$('.sh2').indexOf(b))});
 $('#ssel').innerHTML='<option value="">Choose a service</option>'+CAP.map(x=>`<option>${x}</option>`).join('')+'<option>Not sure yet</option>';
 document.addEventListener('click',e=>{const a=e.target.closest('[data-svc]');if(a&&a.dataset.svc)$('#ssel').value=a.dataset.svc});

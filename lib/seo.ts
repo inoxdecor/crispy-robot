@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   BUSINESS,
   CONTENT_UPDATED,
+  PRIMARY_MARKETS,
   SITE_ORIGIN,
   corePages,
   homepageFaqs,
@@ -64,8 +65,8 @@ export function schemaFor(
       addressCountry: "IN",
     },
     areaServed: [
-      { "@type": "AdministrativeArea", name: "Delhi NCR" },
-      { "@type": "Country", name: "India" },
+      { "@type": "Place", name: "Worldwide" },
+      ...PRIMARY_MARKETS.map((name) => ({ "@type": "Country", name })),
     ],
   };
   const serviceNode = (item: Service) => ({
@@ -88,7 +89,7 @@ export function schemaFor(
         url: `${SITE_ORIGIN}/`,
         name: BUSINESS.name,
         publisher: { "@id": organizationId },
-        inLanguage: "en-IN",
+        inLanguage: "en",
       },
       {
         "@type": "WebPage",
@@ -96,7 +97,7 @@ export function schemaFor(
         url,
         name: page.title,
         description: page.description,
-        inLanguage: "en-IN",
+        inLanguage: "en",
         isPartOf: { "@id": websiteId },
         about: { "@id": service ? `${url}#service` : organizationId },
         breadcrumb: { "@id": `${url}#breadcrumb` },
@@ -187,7 +188,7 @@ export async function renderHome() {
   let html = await readTemplate();
   const page = corePages[0];
   html = html
-    .replace('<html lang="en">', '<html lang="en-IN" class="no-js">')
+    .replace('<html lang="en">', '<html lang="en" class="no-js">')
     .replace(
       /<head>[\s\S]*?<\/head>/i,
       `<head>${renderHead(page, [["Home", "/"]], undefined, true)}</head>`,
@@ -205,12 +206,12 @@ export async function renderHome() {
     `<select name="svc" id="ssel" required><option value="">Choose a service</option>${services.map((item) => `<option>${escapeHtml(item.frontendName)}</option>`).join("")}<option>Not sure yet</option></select>`,
   );
   html = html.replace(
-    '<p class="sub rv">One independent team covering design, front end, back end, mobile and AI integration, so your project doesn’t get passed between vendors.</p>',
-    '<p class="sub rv">One independent team covering design, front end, back end, mobile and AI integration. Based in New Delhi, we work with businesses across Delhi NCR and remotely across India.</p>',
+    /<p class="sub rv">One independent team covering[^<]*<\/p>/,
+    '<p class="sub rv">One independent team covering design, front end, back end, mobile and AI integration. Based in New Delhi, we collaborate remotely worldwide, with a focus on India, the United States, United Kingdom, United Arab Emirates and Canada.</p>',
   );
   html = html.replace(
     '<p class="sub rv">Hover or tap a category to see what we build and what it does for your business.</p>',
-    '<p class="sub rv">Hover or tap a category to see what we build and what it does for your business. <a class="inline-service-link" href="/services">Explore all development and design services.</a></p>',
+    '<p class="sub rv">Scroll or swipe to explore each service, or select a category to jump ahead. <a class="inline-service-link" href="/services">Explore all development and design services.</a></p>',
   );
   projects.forEach((project) => {
     const externalLink = `<a class="btn" href="${project.external}" target="_blank" rel="noopener">Visit live site</a>`;
@@ -220,6 +221,8 @@ export async function renderHome() {
     );
   });
   html = html.replace("</footer>", `${seoFooter()}</footer>`);
+  html = html.replace('</head>', '<link rel="stylesheet" href="/reference/service-scroll.css"></head>');
+  html = html.replace('</body>', '<script defer src="/reference/service-scroll.js"></script></body>');
   // The head loads Three.js with defer; dependent scripts retain their existing order.
   html = html.replace('<script src="/vendor/three-r128.min.js"></script>', "");
   html = html.replace(
@@ -249,7 +252,7 @@ async function pageShell(
       .match(/<footer[\s\S]*?<\/footer>/)?.[0]
       .replace(/href="#/g, 'href="/#')
       .replace("</footer>", `${seoFooter()}</footer>`) || "";
-  return `<!DOCTYPE html><html lang="en-IN" class="no-js"><head>${renderHead(page, crumbs, service)}</head><body id="top" class="seo-page"><a class="skip" href="#main">Skip to content</a>${header}<main id="main" tabindex="-1"><div class="wrap">${breadcrumbs(crumbs)}</div>${content}</main>${footer}<script defer src="/reference/navigation.js"></script></body></html>`;
+  return `<!DOCTYPE html><html lang="en" class="no-js"><head>${renderHead(page, crumbs, service)}</head><body id="top" class="seo-page"><a class="skip" href="#main">Skip to content</a>${header}<main id="main" tabindex="-1"><div class="wrap">${breadcrumbs(crumbs)}</div>${content}</main>${footer}<script defer src="/reference/navigation.js"></script></body></html>`;
 }
 
 function serviceCards(items: Service[]) {
@@ -283,7 +286,7 @@ export async function renderServiceIndex() {
       ["Home", "/"],
       ["Services", "/services"],
     ],
-    `<section class="seo-intro wrap"><p class="mono">Design + development / New Delhi</p><h1>Digital services.<br><span>Connected to your business.</span></h1><p>Custom websites, mobile applications, business software, AI integrations and digital design from one independent studio in New Delhi. We work with businesses in Delhi NCR and remotely across India.</p></section><section class="wrap seo-content" aria-label="Development and design services">${serviceCards(services)}</section>${contactBand()}`,
+    `<section class="seo-intro wrap"><p class="mono">Design + development / Worldwide</p><h1>Digital services.<br><span>Connected to your business.</span></h1><p>Custom websites, mobile applications, business software, AI integrations and digital design for businesses worldwide. From New Delhi, we collaborate remotely with teams in India, the United States, United Kingdom, United Arab Emirates and Canada.</p></section><section class="wrap seo-content" aria-label="Development and design services">${serviceCards(services)}</section>${contactBand()}`,
   );
 }
 

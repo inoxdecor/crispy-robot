@@ -40,3 +40,7 @@ generate_lead fires only after provider-confirmed acceptance and analytics conse
 5. Confirm intended GA4 property/ID, review Enhanced Measurement form interactions to avoid duplicate lead counting, and mark generate_lead as a key event. Use a deliberate consented test in DebugView/Realtime. See [Google key-event instructions](https://support.google.com/analytics/answer/13128484).
 
 Owner inbox delivery, physical devices/Safari, field LCP/INP and Google account settings remain manual checks. No deployment, push or DNS edits were performed.
+
+## Worldwide positioning update
+
+Marketing copy, metadata and sharing images now prioritise worldwide remote collaboration, with India, the United States, United Kingdom, United Arab Emirates and Canada as primary markets. Organization and Service areaServed data includes worldwide coverage and those five countries. New Delhi remains the actual business address; no overseas offices or completed international projects are claimed. Public page language is generic English. Regional duplicate pages were not introduced.

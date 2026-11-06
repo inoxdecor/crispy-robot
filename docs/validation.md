@@ -19,3 +19,15 @@ Worldwide targeting follow-up: regenerated sharing images and production HTML, p
 Services now use a sticky, gesture-stepped journey. Wheel/swipe advances one category; reverse moves back. Click/keyboard selection resets progression, and boundary gestures return to page scrolling. Reduced motion and short viewports retain the ordinary accordion. Closed accordion links are inert to keyboard focus; initial SEO HTML remains intact. Hover no longer changes the selected category during scrolling.
 
 Final production build and lint passed. All 23 browser regressions passed, including four axe scans. node scripts/service-scroll-check.mjs passed desktop gesture/reverse/click-continuation/boundary, real CDP mobile swipe/reverse, and reduced-motion fallback checks with no runtime errors. Screenshots: artifacts/service-scroll-mobile.png and service-scroll-desktop.png. No deployment or push.
+
+## Showcase scroll sequence
+
+The shared gesture controller now also drives Showcase: Websites, Mobile apps, Dashboards, E-commerce, AI tools. Clicking or keyboard-selecting a tab sets the continuation point; reverse scrolling/swiping goes back and boundary gestures release the page. Mobile keeps all five tabs visible. Reduced motion and short viewports keep normal tabs. Existing demo visuals and conceptual-data labels remain.
+
+Production build and lint passed. The focused section-scroll checks passed Services regression plus Showcase wheel/reverse/click/keyboard/boundary and actual CDP mobile swipe/reverse/tap continuation, with no runtime errors. Screenshots: artifacts/showcase-scroll-desktop.png and showcase-scroll-mobile.png. No deployment or push.
+
+## Mobile scrolling follow-up
+
+Both Services and Showcase now support portrait phone heights down to 480px rather than disabling below 680px. Document-level scoped touch handling includes page margins and entry into the pinned area, while excluding navigation, consent and form controls. A gesture uses its starting selection to prevent double advancement. Mobile toolbar-only resizes retain the step length/selection. Compact short-screen previews keep controls readable; long service content can be scrolled before advancing. Reduced-motion fallback remains.
+
+Production build, lint and all 23 browser checks passed. Focused real CDP swipe tests passed at 390x844, 390x667 and 360x640, covering both sections, margin swipes/reverse, native page scrolling, click/tap continuation, boundaries and toolbar-height resize preservation. No runtime errors. Short-phone screenshots are in artifacts/. Physical-device Safari remains untested. No deployment or push.

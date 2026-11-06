@@ -1,21 +1,26 @@
-/* Scroll through the existing service accordion without replacing its crawlable HTML. */
-(() => {
-  const stage = document.querySelector('#services .sv');
-  const list = document.querySelector('#sr');
+/* Shared gesture progression for the service accordion and Showcase tabs. */
+function setupSectionScroll(showcase = false) {
+  const stage = document.querySelector(showcase ? '#build .sc' : '#services .sv');
+  const list = document.querySelector(showcase ? '#tabs' : '#sr');
   if (!stage || !list) return;
-  const buttons = [...list.querySelectorAll('.sh2')];
+  const selector = showcase ? '[role="tab"]' : '.sh2';
+  const selectedAttribute = showcase ? 'aria-selected' : 'aria-expanded';
+  const buttons = [...list.querySelectorAll(selector)];
+  if (!buttons.length) return;
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const journey = document.createElement('div');
-  journey.className = 'service-journey';
+  journey.className = showcase ? 'showcase-journey' : 'service-journey';
   stage.before(journey);
   journey.append(stage);
   let enabled = false, stride = 1, index = 0, applying = false, frame = 0;
   let lastWheel = -Infinity, lastStep = -Infinity, wheelTotal = 0, burstUsed = false;
   let touch = null;
+  let measuredWidth = 0;
   const topInset = () => innerWidth <= 860 ? 76 : 90;
   const start = () => journey.getBoundingClientRect().top + scrollY - topInset();
   const pinned = () => enabled && scrollY >= start() - 3 && scrollY <= start() + stride * (buttons.length - 1) + 3;
   function reveal() {
+    if (showcase) return; // Showcase keeps every tab visible at once.
     const row = buttons[index].closest('.sr');
     // Scroll only the list, never the whole document or focused controls.
     const offset = row.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
@@ -23,7 +28,7 @@
   }
   function select(next) {
     next = Math.max(0, Math.min(buttons.length - 1, next));
-    if (index !== next || buttons[next].getAttribute('aria-expanded') !== 'true') {
+    if (index !== next || buttons[next].getAttribute(selectedAttribute) !== 'true') {
       index = next;
       applying = true;
       buttons[index].click();
@@ -44,15 +49,22 @@
       select(Math.round(progress));
   }
   function measure() {
-    enabled = !motion.matches && innerHeight >= 680;
-    journey.classList.toggle('service-scroll', enabled);
-    stride = Math.max(180, Math.round(innerHeight * 0.55));
+    const wasPinned = pinned();
+    const previousEnabled = enabled;
+    enabled = !motion.matches && innerHeight >= (innerWidth <= 860 ? 480 : 680);
+    journey.classList.toggle(showcase ? 'showcase-scroll' : 'service-scroll', enabled);
+    // Mobile browser toolbars resize the viewport during a swipe. Keep its
+    // existing step length so the active item cannot jump or move backwards.
+    if (innerWidth > 860 || measuredWidth !== innerWidth || previousEnabled !== enabled)
+      stride = Math.max(180, Math.round(innerHeight * 0.55));
+    measuredWidth = innerWidth;
     journey.style.setProperty('--service-travel', `${stride * (buttons.length - 1)}px`);
     if (!enabled) { list.scrollTop = 0; return; }
-    sync();
+    if (wasPinned && previousEnabled) move(index);
+    else sync();
   }
   function manual(event) {
-    const button = event.target.closest('.sh2');
+    const button = event.target.closest(selector);
     if (applying || !button || !enabled) return;
     index = buttons.indexOf(button);
     // Clicking or keyboard-selecting a service resets the scroll progression.
@@ -80,27 +92,37 @@
       move(index + Math.sign(wheelTotal));
     }
   }, { passive: false });
-  journey.addEventListener('touchstart', event => {
-    touch = pinned() && event.touches.length === 1
-      ? { x: event.touches[0].clientX, y: event.touches[0].clientY, dy: 0, captured: false } : null;
+  document.addEventListener('touchstart', event => {
+    const rect = stage.getBoundingClientRect();
+    const nearEntry = enabled && rect.top >= topInset() - 3 && rect.top <= topInset() + 120;
+    const blocked = event.target.closest('header, [role="dialog"], .analytics-panel, input, textarea, select');
+    touch = !blocked && (pinned() || nearEntry) && event.touches.length === 1
+      ? { x: event.touches[0].clientX, y: event.touches[0].clientY, dy: 0, captured: false, index,
+          scroller: event.target.closest('.sb > div') } : null;
   }, { passive: true });
-  journey.addEventListener('touchmove', event => {
-    if (!touch || event.touches.length !== 1) return;
+  document.addEventListener('touchmove', event => {
+    if (!touch) return; if (event.touches.length !== 1) { touch = null; return; }
     touch.dy = touch.y - event.touches[0].clientY;
     const dx = touch.x - event.touches[0].clientX;
     if (Math.abs(touch.dy) <= Math.max(10, Math.abs(dx))) return;
     const direction = Math.sign(touch.dy);
-    if ((index === 0 && direction < 0) || (index === buttons.length - 1 && direction > 0)) return;
+    const scroller = touch.scroller;
+    if (scroller && scroller.scrollHeight > scroller.clientHeight + 2 &&
+        ((direction > 0 && scroller.scrollTop + scroller.clientHeight < scroller.scrollHeight - 2) ||
+         (direction < 0 && scroller.scrollTop > 2))) { touch = null; return; }
+    if ((touch.index === 0 && direction < 0) || (touch.index === buttons.length - 1 && direction > 0)) return;
     touch.captured = true;
     event.preventDefault();
   }, { passive: false });
-  journey.addEventListener('touchend', () => {
-    if (touch?.captured && Math.abs(touch.dy) >= 45) move(index + Math.sign(touch.dy));
+  document.addEventListener('touchend', () => {
+    if (touch?.captured && Math.abs(touch.dy) >= 45) move(touch.index + Math.sign(touch.dy));
     touch = null;
   });
-  journey.addEventListener('touchcancel', () => { touch = null; });
+  document.addEventListener('touchcancel', () => { touch = null; });
   addEventListener('scroll', () => { if (!frame) frame = requestAnimationFrame(sync); }, { passive: true });
   addEventListener('resize', measure);
   motion.addEventListener('change', measure);
   measure();
-})();
+}
+setupSectionScroll();
+setupSectionScroll(true);

@@ -31,3 +31,9 @@ Production build and lint passed. The focused section-scroll checks passed Servi
 Both Services and Showcase now support portrait phone heights down to 480px rather than disabling below 680px. Document-level scoped touch handling includes page margins and entry into the pinned area, while excluding navigation, consent and form controls. A gesture uses its starting selection to prevent double advancement. Mobile toolbar-only resizes retain the step length/selection. Compact short-screen previews keep controls readable; long service content can be scrolled before advancing. Reduced-motion fallback remains.
 
 Production build, lint and all 23 browser checks passed. Focused real CDP swipe tests passed at 390x844, 390x667 and 360x640, covering both sections, margin swipes/reverse, native page scrolling, click/tap continuation, boundaries and toolbar-height resize preservation. No runtime errors. Short-phone screenshots are in artifacts/. Physical-device Safari remains untested. No deployment or push.
+
+## Mobile preview clarity
+
+Reviewed the supplied 14.5-second WhatsApp recording using local video frames. It showed a sticky preview covering service headings/text. Rebalanced both mobile stages: complete full-width service mockups, readable descriptions below, contained unrotated Showcase mockups, horizontal category tabs and demo-data cards below instead of over the preview. Long content remains scrollable. Desktop design is unchanged.
+
+Production build and lint passed. Dedicated geometry checks covered all seven service previews and five Showcase previews at 360x640, 375x812 and 390x844: full-width/contained service previews, no cropped mockup content, no preview/text or data-card overlap, visible selected tabs and no page overflow. Shared desktop/mobile gesture regressions passed. Updated screenshots: artifacts/services-clear-360.png and showcase-clear-360.png (also 375 and 390). No deployment or push.

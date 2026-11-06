@@ -20,7 +20,12 @@ function setupSectionScroll(showcase = false) {
   const start = () => journey.getBoundingClientRect().top + scrollY - topInset();
   const pinned = () => enabled && scrollY >= start() - 3 && scrollY <= start() + stride * (buttons.length - 1) + 3;
   function reveal() {
-    if (showcase) return; // Showcase keeps every tab visible at once.
+    if (showcase) {
+      const tab = buttons[index];
+      // Keep the selected mobile tab visible without moving the page vertically.
+      list.scrollTo({ left: Math.max(0, tab.getBoundingClientRect().left - list.getBoundingClientRect().left + list.scrollLeft - 4), behavior: 'instant' });
+      return;
+    }
     const row = buttons[index].closest('.sr');
     // Scroll only the list, never the whole document or focused controls.
     const offset = row.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
@@ -98,7 +103,7 @@ function setupSectionScroll(showcase = false) {
     const blocked = event.target.closest('header, [role="dialog"], .analytics-panel, input, textarea, select');
     touch = !blocked && (pinned() || nearEntry) && event.touches.length === 1
       ? { x: event.touches[0].clientX, y: event.touches[0].clientY, dy: 0, captured: false, index,
-          scroller: event.target.closest('.sb > div') } : null;
+          scroller: event.target.closest('.sb > div, .showcase-scroll .stg') } : null;
   }, { passive: true });
   document.addEventListener('touchmove', event => {
     if (!touch) return; if (event.touches.length !== 1) { touch = null; return; }

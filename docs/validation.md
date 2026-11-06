@@ -37,3 +37,9 @@ Production build, lint and all 23 browser checks passed. Focused real CDP swipe 
 Reviewed the supplied 14.5-second WhatsApp recording using local video frames. It showed a sticky preview covering service headings/text. Rebalanced both mobile stages: complete full-width service mockups, readable descriptions below, contained unrotated Showcase mockups, horizontal category tabs and demo-data cards below instead of over the preview. Long content remains scrollable. Desktop design is unchanged.
 
 Production build and lint passed. Dedicated geometry checks covered all seven service previews and five Showcase previews at 360x640, 375x812 and 390x844: full-width/contained service previews, no cropped mockup content, no preview/text or data-card overlap, visible selected tabs and no page overflow. Shared desktop/mobile gesture regressions passed. Updated screenshots: artifacts/services-clear-360.png and showcase-clear-360.png (also 375 and 390). No deployment or push.
+
+## Showcase content-origin swipe handling
+
+Mobile Showcase now owns vertical drag gestures directly on the preview/text instead of handing them to a nested native scroller. Overflow content is read first, with remaining drag progressing the selected tab. The stage stays pinned through all five previews; the next upward swipe after AI tools moves to the following AI section. Tap selection remains the continuation point; reverse swipes return to the previous preview. Header, consent, form controls, horizontal tab movement, reduced motion and desktop behavior remain excluded/preserved.
+
+Production build and lint passed. The shared Services/Showcase gesture regression passed. New actual-CDP content-origin swipe tests cover 360x640, 390x844 and 412x915: pinned coordinates throughout the full sequence, exit to the next section, tap/reverse continuation and reading a deliberately constrained preview before advancing. No deployment or push.

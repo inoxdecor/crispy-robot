@@ -103,6 +103,7 @@ function setupSectionScroll(showcase = false) {
     const blocked = event.target.closest('header, [role="dialog"], .analytics-panel, input, textarea, select');
     touch = !blocked && (pinned() || nearEntry) && event.touches.length === 1
       ? { x: event.touches[0].clientX, y: event.touches[0].clientY, dy: 0, captured: false, index,
+          direct: showcase && innerWidth <= 860, lastDy: 0, remaining: 0,
           scroller: event.target.closest('.sb > div, .showcase-scroll .stg') } : null;
   }, { passive: true });
   document.addEventListener('touchmove', event => {
@@ -112,6 +113,22 @@ function setupSectionScroll(showcase = false) {
     if (Math.abs(touch.dy) <= Math.max(10, Math.abs(dx))) return;
     const direction = Math.sign(touch.dy);
     const scroller = touch.scroller;
+    if (touch.direct) {
+      // Own vertical dragging over the preview itself. A nested scroll area
+      // must not swallow the swipe or trap the user at the final demo.
+      event.preventDefault();
+      touch.captured = true;
+      let delta = touch.dy - touch.lastDy;
+      touch.lastDy = touch.dy;
+      if (scroller) {
+        const before = scroller.scrollTop;
+        scroller.scrollTop = Math.max(0, Math.min(scroller.scrollHeight - scroller.clientHeight, before + delta));
+        delta -= scroller.scrollTop - before;
+      }
+      if (delta * touch.remaining < 0) touch.remaining = 0;
+      touch.remaining += delta;
+      return;
+    }
     if (scroller && scroller.scrollHeight > scroller.clientHeight + 2 &&
         ((direction > 0 && scroller.scrollTop + scroller.clientHeight < scroller.scrollHeight - 2) ||
          (direction < 0 && scroller.scrollTop > 2))) { touch = null; return; }
@@ -120,7 +137,17 @@ function setupSectionScroll(showcase = false) {
     event.preventDefault();
   }, { passive: false });
   document.addEventListener('touchend', () => {
-    if (touch?.captured && Math.abs(touch.dy) >= 45) move(touch.index + Math.sign(touch.dy));
+    if (touch?.direct && touch.captured && Math.abs(touch.remaining) >= 45) {
+      const direction = Math.sign(touch.remaining);
+      const next = touch.index + direction;
+      if (next >= 0 && next < buttons.length) {
+        move(next);
+        if (touch.scroller) touch.scroller.scrollTop = 0;
+      } else if (direction > 0) {
+        const nextSection = journey.closest('section').nextElementSibling;
+        if (nextSection) scrollTo({ top: nextSection.getBoundingClientRect().top + scrollY - topInset(), behavior: 'instant' });
+      } else scrollBy({ top: touch.remaining, behavior: 'instant' });
+    } else if (touch?.captured && !touch.direct && Math.abs(touch.dy) >= 45) move(touch.index + Math.sign(touch.dy));
     touch = null;
   });
   document.addEventListener('touchcancel', () => { touch = null; });

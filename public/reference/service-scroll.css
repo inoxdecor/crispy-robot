@@ -53,7 +53,7 @@
   .showcase-scroll .tabs button{flex:none;white-space:nowrap;font-size:1.1rem;line-height:1.35;padding:.55rem .7rem;scroll-snap-align:start;border:1px solid var(--g3);border-radius:5px;letter-spacing:-.03em}
   .showcase-scroll .tabs button[aria-selected=true]{padding-left:.7rem;border-color:var(--red);background:rgba(229,43,74,.08)}
   .showcase-scroll .dem{margin-top:.5rem;font-size:.65rem;line-height:1.5}
-  .showcase-scroll .stg{height:100%;min-height:0;max-height:100%;overflow-y:auto;overscroll-behavior:contain;display:grid;grid-template-columns:1fr 1fr;gap:12px;place-items:stretch;align-content:start;padding:12px 4px}
+  .showcase-scroll .stg{height:100%;min-height:0;max-height:100%;overflow-y:auto;overscroll-behavior:auto;display:grid;grid-template-columns:1fr 1fr;gap:12px;place-items:stretch;align-content:start;padding:12px 4px}
   .showcase-scroll .lay{grid-column:1/-1;width:100%;transform:none!important;perspective:none}
   .showcase-scroll .fp{position:static;animation:none;padding:.5rem .75rem;box-shadow:none;font-size:.7rem}
   .showcase-scroll .fp b{font-size:1.15rem}

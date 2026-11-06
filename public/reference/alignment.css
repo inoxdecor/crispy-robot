@@ -1,0 +1,50 @@
+﻿/* Preserve the supplied design; align all hero writing to one left column. */
+.hero .hh,.hero .hb{width:100%;max-width:1320px;margin-inline:auto}
+.hero .hh{align-items:flex-start;justify-content:center;padding-top:1.6rem;padding-bottom:1.8rem}
+.hero h1{max-width:740px;text-align:left}
+.hero .hh>p{max-width:560px;text-align:left}
+.hero .hb>div:first-child{max-width:560px}
+.hero h1 span:nth-child(4)>b{animation-delay:.66s}
+@media(min-width:1100px){.hero{padding-top:112px}.hero h1{font-size:clamp(4.2rem,6.7vw,6.2rem)}.hero .hb{padding-bottom:.6rem}}
+@media(max-width:860px){.hero .hh{padding-top:1rem;padding-bottom:2rem}.hero{gap:2rem}.hero .hb{gap:1.5rem}.hero h1{font-size:clamp(2.8rem,11.5vw,5rem);line-height:.94}.hero .hh>p{max-width:32ch}.hero .hb>div:first-child{max-width:44ch}}
+/* Small functional fixes without changing the reference composition. */
+.consent{display:flex;align-items:flex-start;gap:.65rem;text-transform:none;font:400 .85rem/1.7 var(--body);letter-spacing:0}.consent input{width:20px;height:20px;padding:0;flex:none;margin-top:3px;accent-color:var(--red)}
+.btn:disabled{opacity:.6;cursor:wait}.status a{color:inherit}.status[data-state=success]{color:#9de4bc}
+.sr:not(.on) .sb{visibility:hidden}.sr.on .sb{visibility:visible}
+@media(max-width:860px){.links{height:calc(100dvh - 72px);overflow-y:auto}header.s .links{top:56px;height:calc(100dvh - 56px)}}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
+/* Preserve the palette while making small text readable on its actual surfaces. */
+.st p{color:#4b5059}.pk .q{color:#ff7186}
+@media(max-width:860px){.links{transition-property:opacity,transform}}
+
+
+.lt {
+  background: rgba(240, 240, 238, .72);
+}
+
+.lt2 {
+  background: rgba(221, 224, 227, .74);
+}/* Compact, automatically moving project gallery. */
+#work{padding-top:clamp(3.5rem,6vw,5rem)}
+#work .sl{margin-bottom:1.5rem}
+#work h2{font-size:clamp(2.3rem,4.4vw,4rem);line-height:1}
+#work .trk{gap:1rem;margin-top:1.8rem;padding-bottom:1rem;scroll-snap-type:none;scroll-behavior:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+#work .pj{width:350px;height:438px;min-height:0;padding:20px;display:grid;grid-template-rows:auto 138px 1fr;gap:15px;border-radius:10px;scroll-snap-align:none}
+#work .pj .tp{grid-row:1;font-size:10px;line-height:1.6;gap:12px}
+#work .pj .win{grid-row:2;position:relative;right:auto;top:auto;align-self:stretch;width:100%;margin:0;transform:perspective(900px) rotateY(calc(-5deg + var(--ry,0deg))) rotateX(calc(2deg + var(--rx,0deg)));box-shadow:0 10px 24px #0003;border-radius:5px}
+#work .win .b{padding:7px 9px}#work .win .b i{width:6px;height:6px}
+#work .win .c{padding:12px;min-height:0}#work .win .h{font-size:19px}
+#work .win .gg{gap:5px;margin-top:7px}#work .win .gg div{padding:6px 3px;font-size:10px}
+#work .win .l{height:5px;margin:6px 0}#work .win .p{font-size:10px;padding:4px 8px;margin-top:4px}
+#work .pj>div:not(.tp):not(.win){grid-row:3;display:flex;flex-direction:column;align-items:flex-start;min-height:0}
+#work .pj h3{font-size:27px;line-height:1.02;letter-spacing:-.04em}
+#work .pj p{font-size:14px;line-height:1.65;max-width:none;margin:10px 0 14px}
+#work .pj .btn{font-size:10px;padding:10px 12px;min-height:37px;margin-top:auto}
+#work .pj.nt{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:17px}
+#work .pj.nt .btn{margin-top:10px}
+#work>.wrap:last-child{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-top:8px}
+#work>.wrap:last-child>p{font-size:12px;margin-top:0!important;line-height:1.7}
+.work-motion-toggle{flex-shrink:0;display:inline-flex;align-items:center;gap:8px;font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--tx);background:transparent;border:1px solid var(--g3);border-radius:4px;padding:10px 13px;cursor:pointer;min-height:40px}
+.work-motion-toggle:hover{border-color:var(--red2)}
+@media(max-width:700px){#work .pj{width:min(82vw,330px);height:443px;padding:18px;grid-template-rows:auto 138px 1fr}#work .pj h3{font-size:26px}#work .pj p{font-size:14px}#work>.wrap:last-child{align-items:flex-start;gap:15px}#work>.wrap:last-child>p{font-size:11px;max-width:28ch}.work-motion-toggle{font-size:10px;padding:10px}}
+@media(prefers-reduced-motion:reduce){.work-motion-toggle{display:none}#work .pj .win{transform:none}}

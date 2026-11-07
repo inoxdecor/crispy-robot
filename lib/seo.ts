@@ -59,11 +59,7 @@ export function schemaFor(
       width: 512,
       height: 512,
     },
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "New Delhi",
-      addressCountry: "IN",
-    },
+    address: BUSINESS.address,
     areaServed: [
       { "@type": "Place", name: "Worldwide" },
       ...PRIMARY_MARKETS.map((name) => ({ "@type": "Country", name })),
@@ -159,6 +155,7 @@ export function renderHead(
 <meta property="og:type" content="website"><meta property="og:site_name" content="TheBenzzCreations"><meta property="og:locale" content="en_IN"><meta property="og:url" content="${url}"><meta property="og:title" content="${escapeHtml(page.title)}"><meta property="og:description" content="${escapeHtml(page.description)}"><meta property="og:image" content="${image}"><meta property="og:image:secure_url" content="${image}"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${escapeHtml(page.title)}">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escapeHtml(page.title)}"><meta name="twitter:description" content="${escapeHtml(page.description)}"><meta name="twitter:image" content="${image}"><meta name="twitter:image:alt" content="${escapeHtml(page.title)}"><meta name="theme-color" content="#141518">
 ${verification ? `<meta name="google-site-verification" content="${escapeHtml(verification)}">` : ""}
+${homepage ? '<link rel="alternate" type="text/markdown" href="/index.md">' : ""}<link rel="describedby" type="text/plain" href="/llms.txt"><script defer src="/reference/agents.js"></script>
 <link rel="icon" href="/icon.svg"><link rel="apple-touch-icon" href="/brand-mark.png">
 <link rel="preload" href="/fonts/space-grotesk-700.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/manrope-variable.woff2" as="font" type="font/woff2" crossorigin>
 <script>document.documentElement.classList.replace('no-js','js')</script>
@@ -169,7 +166,7 @@ ${homepage ? '<script defer src="/reference/background-loader.js"></script>' : "
 }
 
 function seoFooter() {
-  return `<div class="wrap seo-footer-links"><nav aria-label="Service information">${services.map((item) => `<a href="/services/${item.slug}">${escapeHtml(item.name)}</a>`).join("")}</nav><div><a href="/services">All services</a><a href="/work">Project details</a><a href="/privacy">Privacy</a><button type="button" class="analytics-settings" data-analytics-settings hidden>Analytics settings</button></div></div>`;
+  return `<div class="wrap seo-footer-links"><nav aria-label="Service information">${services.map((item) => `<a href="/services/${item.slug}">${escapeHtml(item.name)}</a>`).join("")}</nav><div><a href="/services">All services</a><a href="/work">Project details</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><button type="button" class="analytics-settings" data-analytics-settings hidden>Analytics settings</button></div></div>`;
 }
 
 const readTemplate = () =>
@@ -358,4 +355,15 @@ export async function renderPrivacy() {
     ],
     `<section class="wrap seo-intro"><p class="mono">Your information / Your choices</p><h1>Privacy &<br><span>analytics choices.</span></h1><p>Updated ${CONTENT_UPDATED}. This policy explains the information used when you visit the site or contact TheBenzzCreations.</p></section><article class="wrap seo-content seo-legal"><h2>Your project enquiry</h2><p>We use your name, email, chosen service and project description to respond to your enquiry. Phone, business, budget and timeline are optional. Please avoid sharing sensitive personal information.</p><h2>Delivery and storage</h2><p>Enquiries are validated by this website and delivered through Web3Forms or a configured email provider. The details you submit are shared with that provider for delivery and may remain in the studio's inbox while handling your enquiry or project. This site does not maintain a separate enquiry database.</p><h2>Optional Google Analytics</h2><p>If Google Analytics 4 is configured, it is blocked until you choose to allow analytics. Choosing “Decline” keeps it disabled. Advertising storage, advertising user data and personalised advertising remain denied. Your preference is stored locally so the site can remember it.</p><p>After consent, analytics can measure page views and confirmed enquiry submissions. Lead events contain a service category and form identifier; they do not include your name, email, phone or message. Page URLs sent by this implementation omit query strings and fragments. Google may process device, browser and usage information under its own policies.</p><p>You can review or withdraw your choice through <button type="button" class="inline-button" data-analytics-settings>Analytics settings</button>. Withdrawing stops subsequent site analytics events and removes accessible first-party Google Analytics cookies. Existing data already sent to Google is not removed by changing this preference.</p><h2>Local assets and hosting</h2><p>Fonts, images and animation libraries are served locally. Hosting infrastructure may process ordinary request logs to deliver and protect the site. Third-party project links and direct email or WhatsApp links follow their respective providers' privacy practices.</p><h2>Your choices and contact</h2><p>You can ask about or request deletion of information you supplied by contacting <a href="mailto:${BUSINESS.email}">${BUSINESS.email}</a>. You can also contact the studio directly instead of using the enquiry form.</p></article>`,
   );
+}
+
+export async function renderInformation(pathname: string) {
+  const page = publicPages.find((item) => item.path === pathname)!;
+  const contact = `<p>Email: <a href="mailto:${BUSINESS.email}">${BUSINESS.email}</a></p><p>Telephone: <a href="tel:${BUSINESS.telephone}">${BUSINESS.telephone}</a></p><p>Based in ${BUSINESS.location}. We collaborate remotely worldwide.</p><a class="btn" href="/#contact">Send a project enquiry</a>`;
+  const content = pathname === "/about"
+    ? `<h1>About TheBenzzCreations</h1><p>An independent team covering design, front end, back end, mobile and AI integration, based in New Delhi and working remotely worldwide.</p><p>Explore our <a href="/services">services</a>, <a href="/work">published projects</a> and <a href="/#process">process</a>.</p>${contact}`
+    : pathname === "/contact"
+      ? `<h1>Contact TheBenzzCreations</h1><p>Share your business need, intended users and important dates so we can discuss scope and the next step.</p>${contact}`
+      : `<h1>Website terms of use</h1><p>Updated ${CONTENT_UPDATED}.</p><h2>Website information</h2><p>This website describes our services and published portfolio. Illustrative product concepts are identified separately from published projects. External websites are operated by their respective providers.</p><h2>Project enquiries</h2><p>Sending an enquiry starts a discussion. Project deliverables, integrations, third-party costs, timeline and support are defined in an individual proposal agreed with you.</p><h2>Privacy and contact</h2><p>See our <a href="/privacy">privacy policy</a> for enquiry handling and optional analytics choices. For questions about this website, <a href="/contact">contact us</a>.</p>`;
+  return pageShell(page, [["Home", "/"], [pathname.slice(1), pathname]], `<article class="wrap seo-intro seo-legal">${content}</article>`);
 }

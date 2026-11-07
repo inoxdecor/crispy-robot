@@ -19,7 +19,7 @@ import {
 } from "../lib/seo";
 
 test("canonical registry contains unique real public pages and metadata", () => {
-  assert.equal(publicPages.length, 14);
+  assert.equal(publicPages.length, 17);
   for (const key of ["path", "title", "description"] as const)
     assert.equal(
       new Set(publicPages.map((page) => page[key])).size,

@@ -1,5 +1,5 @@
 export const SITE_ORIGIN = "https://www.thebenzzcreations.com";
-export const CONTENT_UPDATED = "2026-11-06";
+export const CONTENT_UPDATED = "2026-11-07";
 export const PRIMARY_MARKETS = [
   "India",
   "United States",
@@ -12,6 +12,7 @@ export const BUSINESS = {
   email: "thebenzzcreationsofficial@gmail.com",
   telephone: "+919899788325",
   location: "New Delhi, India",
+  address: { "@type": "PostalAddress", addressLocality: "New Delhi", addressRegion: "Delhi", addressCountry: "IN" },
 };
 
 export type Service = {
@@ -528,7 +529,14 @@ export const corePages = [
   },
 ];
 
+export const informationPages = [
+  { path: "/about", key: "about", title: "About Our Digital Studio | TheBenzzCreations", description: "Meet TheBenzzCreations, an independent digital studio in New Delhi building websites, apps, software and digital experiences for businesses worldwide." },
+  { path: "/contact", key: "contact", title: "Contact Our Digital Studio | TheBenzzCreations", description: "Contact TheBenzzCreations in New Delhi by email or telephone to discuss your website, app, software, design or automation project and next steps." },
+  { path: "/terms", key: "terms", title: "Website Terms of Use | TheBenzzCreations", description: "Read the website terms for TheBenzzCreations, including portfolio information, external links, project enquiries and how individual proposals define project scope." },
+];
+
 export const publicPages = [
+  ...informationPages,
   ...corePages,
   ...services.map((service) => ({
     path: `/services/${service.slug}`,

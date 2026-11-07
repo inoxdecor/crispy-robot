@@ -41,7 +41,7 @@ const nextConfig: NextConfig = {
           ]
         : []),
       { source: "/index.html", destination: "/", permanent: true },
-      ...["about", "process", "faq", "contact"].flatMap((section) => [
+      ...["process", "faq"].flatMap((section) => [
         { source: `/${section}`, destination: `/#${section}`, permanent: true },
         {
           source: `/${section}.html`,
@@ -53,7 +53,7 @@ const nextConfig: NextConfig = {
       { source: "/service.html", destination: "/services", permanent: true },
       { source: "/work.html", destination: "/work", permanent: true },
       { source: "/solutions", destination: "/#build", permanent: true },
-      { source: "/terms", destination: "/#contact", permanent: true },
+
       ...Object.entries(legacyServices).map(([from, to]) => ({
         source: `/services/${from}`,
         destination: `/services/${to}`,

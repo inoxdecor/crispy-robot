@@ -2,8 +2,7 @@
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const rm=matchMedia('(prefers-reduced-motion:reduce)').matches,fine=matchMedia('(pointer:fine)').matches;
 /* ================= BACKGROUND: scroll-driven 3D point structure (Three.js) ================= */
-let backgroundStarted=false;function startParticleBackground(){
-if(backgroundStarted)return;backgroundStarted=true;
+(function(){
 const cv=$('#bg'),nogl=()=>{cv.hidden=true;document.body.classList.add('nogl')};
 if(!window.THREE)return nogl();
 let R;try{R=new THREE.WebGLRenderer({canvas:cv,antialias:false,alpha:true,powerPreference:'high-performance'})}catch(e){return nogl()}
@@ -33,11 +32,14 @@ vec4 mv=modelViewMatrix*vec4(p,1.);
 gl_PointSize=(2.+aRed*1.8+g*2.4)*(1.+aRed*uLight*.35)*uPx*(14./(-mv.z));gl_Position=projectionMatrix*mv;}`,
 fragmentShader:`uniform float uLight,uOp;varying float vRed,vG;
 void main(){vec2 c=gl_PointCoord-.5;float d=length(c);if(d>.5)discard;float a=1.-smoothstep(.15,.5,d);
-vec3 base=mix(vec3(.84,.86,.9),vec3(.012,.015,.02),uLight);
-float hot=max(vRed,vG*.9);
-vec3 red=mix(vec3(.9,.17,.29),vec3(.012,.015,.02),uLight);
+vec3 base=mix(vec3(.84,.86,.9),vec3(.09,.1,.13),uLight);
+float hot=max(vRed,vG*.9),lightRed=hot*uLight;
+vec3 red=mix(vec3(.9,.17,.29),vec3(1.,.025,.12),uLight);
 vec3 col=mix(base,red,hot);
-gl_FragColor=vec4(col,a*uOp*mix(.6+vG*.4,1.,uLight));}`});
+float shine=1.-smoothstep(0.,.18,d);
+col=mix(col,vec3(1.,.58,.64),shine*lightRed*.45);
+float glow=exp(-d*d*15.)*lightRed*.45;
+gl_FragColor=vec4(col,min(1.,a*uOp*(.6+vG*.4)+glow*uOp));}`});
 const pts=new THREE.Points(geo,mat);pts.frustumCulled=false;sc.add(pts);
 let secs=[],docMax=1,hh=1,hw=1,S0=1,desk=true,idx=-1,sp=0,lastY=scrollY,vs=0,tx=0,ty=0,px=0,py=0,vis=true;
 const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
@@ -55,25 +57,17 @@ function frame(t,still){
 
  const dy=sy-lastY;lastY=sy;vs+=(cl(Math.abs(dy)/45)-vs)*.1;px+=(tx-px)*.05;py+=(ty-py)*.05;
  const e=still?1:cl(t/1.8),sh=cl(sy/innerHeight);
- U.uAp.value=e;U.uT.value=still?0:t;U.uVel.value=still?0:vs;U.uScan.value=Math.sin(t*.45)*2.4;
+ U.uAp.value=e;U.uT.value=still?0:t;U.uVel.value=still?0:vs;U.uScan.value=Math.sin(t*.45)*24;
  const k=still?1:1-.2*cl(sp*4);pts.scale.setScalar(S0*k);
  pts.position.x=desk?hw*.44*Math.cos(sp*9.4248):0;
  pts.position.y=(desk?0:-hh*.16*(1-sh))+(still?0:Math.sin(sp*12.57)*hh*.1);
  pts.rotation.y=(still?.6:t*.08)+sy*.0015+px*.5;pts.rotation.x=.28+py*.3+(still?0:Math.sin(sy*.001)*.2);
- // Back only the light sections with white; keep neighbouring dark sections transparent.
- R.setScissorTest(false);R.setClearColor(0x000000,0);R.clear();
- const lightBacking=cl((U.uLight.value-.6)/.4);
- if(lightBacking>0)secs.filter(q=>q.l===1&&q.b>sy&&q.t<sy+innerHeight).forEach(q=>{
-   const top=Math.max(0,q.t-sy),bottom=Math.min(innerHeight,q.b-sy);
-   R.setScissor(0,innerHeight-bottom,innerWidth,bottom-top);R.setScissorTest(true);R.setClearColor(0xffffff,lightBacking);R.clear(true,false,false);
- });
- R.setScissorTest(false);R.autoClear=false;R.render(sc,cam);R.autoClear=true;}
-let t0=null,animationFrame=0;function loop(n){animationFrame=0;if(document.hidden)return;if(t0===null)t0=n;frame((n-t0)/1000);animationFrame=requestAnimationFrame(loop)}
-place();let resizeFrame=0;addEventListener('resize',()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(place)});addEventListener('load',measure);document.fonts.ready.then(measure);new ResizeObserver(measure).observe(document.querySelector('main'));
-if(!rm){animationFrame=requestAnimationFrame(loop);document.addEventListener('visibilitychange',()=>{cancelAnimationFrame(animationFrame);if(!document.hidden)animationFrame=requestAnimationFrame(loop)});
+ R.render(sc,cam)}
+let t0=null;function loop(n){requestAnimationFrame(loop);if(!vis)return;if(t0===null)t0=n;frame((n-t0)/1000)}
+place();addEventListener('resize',place);addEventListener('load',measure);
+if(!rm){requestAnimationFrame(loop);document.addEventListener('visibilitychange',()=>{vis=!document.hidden});
 if(fine)addEventListener('pointermove',e=>{tx=(e.clientX/innerWidth-.5)*2;ty=(e.clientY/innerHeight-.5)*2})}
-}
-if(window.THREE)requestAnimationFrame(startParticleBackground);else addEventListener("benzz:three-ready",startParticleBackground,{once:true});
+})();
 /* ================= mockups ================= */
 const M=c=>`<div class="mk">${c}</div>`,TT='<span class="t"></span>';
 const PV={
@@ -94,9 +88,10 @@ const S=[["Web development","Fast, credible sites and web apps that turn visitor
 ["Growth and support","Getting found, staying fast and keeping everything running.",["SEO","Digital marketing","Maintenance and deployment"],"grow"]];
 const CAP=['Web development','Mobile apps','Software engineering','AI and automation','E-commerce','Design and brand','Growth and support'];
 let cur=0;const sr=$('#sr'),pvp=$('#pvp');
-if(!sr.children.length)sr.innerHTML=S.map((s,i)=>`<div class="sr${i?'':' on'}"><button class="sh2" aria-expanded="${!i}" aria-controls="b${i}"><span>0${i+1}</span><h3>${s[0]}</h3></button><div class="sb" id="b${i}"><div><p>${s[1]}</p><ul>${s[2].map(x=>`<li>${x}</li>`).join('')}</ul><a class="btn k" href="#contact" data-svc="${CAP[i]}">Discuss this</a></div></div></div>`).join('');
-function pick(i){if(i===cur&&pvp.innerHTML)return;cur=i;$$('.sr').forEach((r,j)=>{r.classList.toggle('on',j==i);r.querySelector('button').setAttribute('aria-expanded',j==i);r.querySelector('.sb').inert=j!==i});pvp.innerHTML=`<div class="cap mono"><span>0${i+1} / ${S[i][0]}</span><b>Demo UI</b></div>${PV[S[i][3]]()}<p class="mono" style="color:var(--mu)">Animated concept preview</p>`;tick()}
+sr.innerHTML=S.map((s,i)=>`<div class="sr${i?'':' on'}"><button class="sh2" aria-expanded="${!i}" aria-controls="b${i}"><span>0${i+1}</span><h3>${s[0]}</h3></button><div class="sb" id="b${i}"><div><p>${s[1]}</p><ul>${s[2].map(x=>`<li>${x}</li>`).join('')}</ul><a class="btn k" href="#contact" data-svc="${CAP[i]}">Discuss this</a></div></div></div>`).join('');
+function pick(i){if(i===cur&&pvp.innerHTML)return;cur=i;$$('.sr').forEach((r,j)=>{r.classList.toggle('on',j==i);r.querySelector('button').setAttribute('aria-expanded',j==i)});pvp.innerHTML=`<div class="cap mono"><span>0${i+1} / ${S[i][0]}</span><b>Demo UI</b></div>${PV[S[i][3]]()}<p class="mono" style="color:var(--mu)">Animated concept preview</p>`;tick()}
 sr.addEventListener('click',e=>{const b=e.target.closest('.sh2');if(b)pick($$('.sh2').indexOf(b))});
+sr.addEventListener('pointerover',e=>{if(!fine)return;const b=e.target.closest('.sh2');if(b)pick($$('.sh2').indexOf(b))});
 sr.addEventListener('focusin',e=>{const b=e.target.closest('.sh2');if(b)pick($$('.sh2').indexOf(b))});
 $('#ssel').innerHTML='<option value="">Choose a service</option>'+CAP.map(x=>`<option>${x}</option>`).join('')+'<option>Not sure yet</option>';
 document.addEventListener('click',e=>{const a=e.target.closest('[data-svc]');if(a&&a.dataset.svc)$('#ssel').value=a.dataset.svc});
@@ -108,7 +103,7 @@ function showT(i){[...tb.children].forEach((b,j)=>b.setAttribute('aria-selected'
 tb.onclick=e=>{const b=e.target.closest('button');if(b)showT([...tb.children].indexOf(b))};showT(0);
 if(fine&&!rm)$('#stg').addEventListener('pointermove',e=>{const r=e.currentTarget.getBoundingClientRect();lay.style.setProperty('--ry',((e.clientX-r.left)/r.width-.5)*14+'deg');lay.style.setProperty('--rx',-((e.clientY-r.top)/r.height-.5)*10+'deg')});
 function tick(){}
-if(!rm)setInterval(()=>{if(document.hidden)return;$$('.cnt').forEach(e=>{e.textContent=(+e.textContent+(Math.random()<.6?1:0))})},1700);
+if(!rm)setInterval(()=>$$('.cnt').forEach(e=>{e.textContent=(+e.textContent+(Math.random()<.6?1:0))}),1700);
 /* portfolio tilt */
 if(fine&&!rm)$$('.pj').forEach(c=>c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect();c.style.setProperty('--ry',((e.clientX-r.left)/r.width-.5)*12+'deg');c.style.setProperty('--rx',-((e.clientY-r.top)/r.height-.5)*8+'deg')}));
 /* ================= AI network (2D canvas) ================= */
@@ -119,12 +114,12 @@ function draw(){x.clearRect(0,0,W,H);let hv=-1;nodes.forEach((n,i)=>{if(Math.hyp
 edges.forEach(([a,b])=>{const A=nodes[a],B=nodes[b],hot=hv===a||hv===b;x.strokeStyle=hot?'rgba(229,43,74,.7)':'rgba(166,169,175,.16)';x.lineWidth=hot?1.4:1;x.beginPath();x.moveTo(A.x,A.y);x.lineTo(B.x,B.y);x.stroke()});
 P.forEach(p=>{const[a,b]=edges[p.e],A=nodes[a],B=nodes[b];if(!rm)p.p+=p.v;if(p.p>=1){B.g=1;p.p=0;p.e=Math.random()*edges.length|0}const q=rm?.5:p.p;x.fillStyle='#FF4864';x.beginPath();x.arc(A.x+(B.x-A.x)*q,A.y+(B.y-A.y)*q,2.4,0,7);x.fill()});
 nodes.forEach((n,i)=>{n.g*=.94;x.fillStyle='#1C1E22';x.strokeStyle=i===hv||n.g>.1?'#E52B4A':'#6b6f78';x.lineWidth=1.5;x.beginPath();x.arc(n.x,n.y,i===hv?10:8,0,7);x.fill();x.stroke();if(n.g>.05){x.fillStyle=`rgba(229,43,74,${n.g*.7})`;x.beginPath();x.arc(n.x,n.y,5+n.g*6,0,7);x.fill()}})}
-let networkFrame=0;function networkLoop(){networkFrame=0;if(!run||rm||document.hidden)return;draw();networkFrame=requestAnimationFrame(networkLoop)}function syncNetwork(){cancelAnimationFrame(networkFrame);if(run&&!rm&&!document.hidden)networkFrame=requestAnimationFrame(networkLoop)}
-new IntersectionObserver(e=>{run=e[0].isIntersecting;syncNetwork()}).observe(c);document.addEventListener('visibilitychange',syncNetwork);addEventListener('resize',build);build();
+(function loop(){requestAnimationFrame(loop);if(run&&!rm)draw()})();
+new IntersectionObserver(e=>{run=e[0].isIntersecting}).observe(c);addEventListener('resize',build);build();
 c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});c.addEventListener('pointerleave',()=>{mx=my=-1})})();
 /* ================= faq ================= */
 const F=[["How much does a custom website cost?","It depends on pages, features and integrations, so every project is quoted individually. Share your brief and we’ll reply with a clear estimate."],["Do you develop Android and iOS apps?","Yes, including cross-platform apps built with React Native, connected to an admin panel or your existing systems."],["Can you build custom software for my business?","Yes: internal tools, CRMs, inventory systems, dashboards and the Java / Spring Boot or Node.js back ends behind them."],["Can AI be integrated into existing systems?","Often, yes. We integrate existing AI models and services into your workflows, and we’ll say plainly if it isn’t a good fit."],["Do you build e-commerce websites and apps?","Yes: catalogues, checkout, payment gateway integration, inventory, orders and admin dashboards."],["How long does a project take?","A focused website can take a few weeks. Apps and software take longer. We agree a timeline after discovery."],["Do you help with deployment and maintenance?","Yes. We support deployment and can agree ongoing maintenance, with the scope defined before we start."],["How do we start?","Send the form or message us on WhatsApp. We’ll reply with a short note and a link to book a call."]];
-if(!$('#fq').children.length)$('#fq').innerHTML=F.map(f=>`<details name="faq"><summary>${f[0]}<span class="pl" aria-hidden="true">+</span></summary><p>${f[1]}</p></details>`).join('');
+$('#fq').innerHTML=F.map(f=>`<details name="faq"><summary>${f[0]}<span class="pl" aria-hidden="true">+</span></summary><p>${f[1]}</p></details>`).join('');
 /* ================= nav, reveal, progress, magnetic ================= */
 const mb=$('#mb'),nv=$('#nv'),hd=$('#hd'),pg=$('#pg');
 mb.onclick=()=>{const o=nv.classList.toggle('o');mb.setAttribute('aria-expanded',o);mb.textContent=o?'Close':'Menu';document.body.style.overflow=o?'hidden':''};

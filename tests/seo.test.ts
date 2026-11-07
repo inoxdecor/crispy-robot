@@ -19,7 +19,7 @@ import {
 } from "../lib/seo";
 
 test("canonical registry contains unique real public pages and metadata", () => {
-  assert.equal(publicPages.length, 17);
+  assert.equal(publicPages.length, 18);
   for (const key of ["path", "title", "description"] as const)
     assert.equal(
       new Set(publicPages.map((page) => page[key])).size,
@@ -60,6 +60,7 @@ test("homepage includes service text, FAQ answers and internal links before Java
   assert.match(html, /<script defer src="\/reference\/projects.js"/);
   assert.equal((html.match(/rel="canonical"/g) || []).length, 1);
   assert.ok(html.includes(`href="${SITE_ORIGIN}/"`));
+  assert.ok(html.includes('href="/pricing"'));
 });
 
 test("all service and project documents have crawlable content and bidirectional links", async () => {

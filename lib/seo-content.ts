@@ -12,6 +12,8 @@ export const BUSINESS = {
   email: "thebenzzcreationsofficial@gmail.com",
   telephone: "+919899788325",
   location: "New Delhi, India",
+  // Add only owner-confirmed profiles for the studio itself, not personal or project pages.
+  sameAs: [] as string[],
   address: { "@type": "PostalAddress", addressLocality: "New Delhi", addressRegion: "Delhi", addressCountry: "IN" },
 };
 
@@ -530,6 +532,7 @@ export const corePages = [
 ];
 
 export const informationPages = [
+  { path: "/pricing", key: "pricing", title: "Project Pricing & Custom Quotes | TheBenzzCreations", description: "Explore website, app and software project options from TheBenzzCreations, what determines a custom quote, and how to request an estimate without logging in." },
   { path: "/about", key: "about", title: "About Our Digital Studio | TheBenzzCreations", description: "Meet TheBenzzCreations, an independent digital studio in New Delhi building websites, apps, software and digital experiences for businesses worldwide." },
   { path: "/contact", key: "contact", title: "Contact Our Digital Studio | TheBenzzCreations", description: "Contact TheBenzzCreations in New Delhi by email or telephone to discuss your website, app, software, design or automation project and next steps." },
   { path: "/terms", key: "terms", title: "Website Terms of Use | TheBenzzCreations", description: "Read the website terms for TheBenzzCreations, including portfolio information, external links, project enquiries and how individual proposals define project scope." },

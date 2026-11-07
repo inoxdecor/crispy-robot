@@ -34,7 +34,12 @@ test("discovery and schema cover every public page and verified contact details"
   assert.ok("telephone" in organization && "address" in organization);
   assert.equal(organization.telephone, BUSINESS.telephone);
   assert.deepEqual(organization.address, BUSINESS.address);
-  for (const pathname of ["/about", "/contact", "/terms"]) assert.match(await renderInformation(pathname), /<h1>/);
+  for (const pathname of ["/about", "/contact", "/terms", "/pricing"]) assert.match(await renderInformation(pathname), /<h1>/);
+  const pricing = await renderInformation("/pricing");
+  assert.match(pricing, /Prices are available on request/);
+  assert.match(pricing, /mailto:thebenzzcreationsofficial@gmail.com/);
+  assert.match(pricing, /tel:\+919899788325/);
+  assert.ok(!pricing.includes('"@type":"Offer"'));
 });
 
 const rpc = (method: string, params?: unknown, origin?: string) => mcp(new Request("https://www.thebenzzcreations.com/mcp", {

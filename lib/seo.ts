@@ -53,6 +53,7 @@ export function schemaFor(
     url: `${SITE_ORIGIN}/`,
     email: BUSINESS.email,
     telephone: BUSINESS.telephone,
+    ...(BUSINESS.sameAs.length ? { sameAs: BUSINESS.sameAs } : {}),
     logo: {
       "@type": "ImageObject",
       url: `${SITE_ORIGIN}/brand-mark.png`,
@@ -166,7 +167,7 @@ ${homepage ? '<script defer src="/reference/background-loader.js"></script>' : "
 }
 
 function seoFooter() {
-  return `<div class="wrap seo-footer-links"><nav aria-label="Service information">${services.map((item) => `<a href="/services/${item.slug}">${escapeHtml(item.name)}</a>`).join("")}</nav><div><a href="/services">All services</a><a href="/work">Project details</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><button type="button" class="analytics-settings" data-analytics-settings hidden>Analytics settings</button></div></div>`;
+  return `<div class="wrap seo-footer-links"><nav aria-label="Service information">${services.map((item) => `<a href="/services/${item.slug}">${escapeHtml(item.name)}</a>`).join("")}</nav><div><a href="/services">All services</a><a href="/work">Project details</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/pricing">Pricing</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><button type="button" class="analytics-settings" data-analytics-settings hidden>Analytics settings</button></div></div>`;
 }
 
 const readTemplate = () =>
@@ -360,7 +361,9 @@ export async function renderPrivacy() {
 export async function renderInformation(pathname: string) {
   const page = publicPages.find((item) => item.path === pathname)!;
   const contact = `<p>Email: <a href="mailto:${BUSINESS.email}">${BUSINESS.email}</a></p><p>Telephone: <a href="tel:${BUSINESS.telephone}">${BUSINESS.telephone}</a></p><p>Based in ${BUSINESS.location}. We collaborate remotely worldwide.</p><a class="btn" href="/#contact">Send a project enquiry</a>`;
-  const content = pathname === "/about"
+  const content = pathname === "/pricing"
+    ? `<h1>Project pricing</h1><p>Every project is scoped individually for clients worldwide. Prices are available on request, based on your scope, requirements and timeline.</p><h2>Essential Presence</h2><p>A website or landing page for a credible online presence. Pricing on request.</p><h2>Signature Digital Experience</h2><p>A custom website with a stronger identity and a clear enquiry journey. Custom quote.</p><h2>Custom Product Engineering</h2><p>Mobile apps, software platforms, e-commerce systems and AI integrations. Custom quote.</p><h2>Ongoing Partnership</h2><p>Maintenance, deployment, optimisation and development support. Pricing on request.</p><h2>What determines the quote?</h2><p>Page count, content preparation, custom functionality, integrations and review requirements determine the quote. Deliverables, third-party costs, timeline and support are defined in your individual proposal.</p><h2>Request an estimate</h2><p>Share your goals, required features, budget and important dates. You can contact us directly without JavaScript or an account.</p>${contact}`
+    : pathname === "/about"
     ? `<h1>About TheBenzzCreations</h1><p>An independent team covering design, front end, back end, mobile and AI integration, based in New Delhi and working remotely worldwide.</p><p>Explore our <a href="/services">services</a>, <a href="/work">published projects</a> and <a href="/#process">process</a>.</p>${contact}`
     : pathname === "/contact"
       ? `<h1>Contact TheBenzzCreations</h1><p>Share your business need, intended users and important dates so we can discuss scope and the next step.</p>${contact}`

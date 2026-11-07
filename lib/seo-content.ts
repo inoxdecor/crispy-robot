@@ -13,7 +13,7 @@ export const BUSINESS = {
   telephone: "+919899788325",
   location: "New Delhi, India",
   // Add only owner-confirmed profiles for the studio itself, not personal or project pages.
-  sameAs: [] as string[],
+  sameAs: ["https://www.instagram.com/thebenzzcreations/"],
   address: { "@type": "PostalAddress", addressLocality: "New Delhi", addressRegion: "Delhi", addressCountry: "IN" },
 };
 
